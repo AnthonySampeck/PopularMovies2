@@ -17,6 +17,8 @@
 
     <string name="title_activity_movie_detail">MovieDetailActivity</string>
 
+    <string name="action_refresh">Refresh</string>
+
 
 
 </resources>
