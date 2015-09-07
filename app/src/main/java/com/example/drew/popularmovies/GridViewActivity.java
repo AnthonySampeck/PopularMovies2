@@ -37,7 +37,7 @@ public class GridViewActivity extends ActionBarActivity {
     private ArrayList<Movie> mMovie;
     private String mBase_URL = "http://api.themoviedb.org/3/discover/movie?";
     private String mSort = null;
-    private String mApi_key = "&api_key=";
+    private String mApi_key = "&api_key=bb99fbc46e9777b057575f946a19f3f3";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
