@@ -6,6 +6,7 @@ public class Movie {
     private String desc;
     private String year;
     private String rating;
+    private String id;
 
     public Movie() {super();}
 
@@ -28,5 +29,11 @@ public class Movie {
     public String getRating(){return rating;}
 
     public void setRating (String rating){this.rating=rating;}
+
+    public String getMovieID(){return id;}
+
+    public void setMovieID(String id){this.id=id;}
+
+
 
 }

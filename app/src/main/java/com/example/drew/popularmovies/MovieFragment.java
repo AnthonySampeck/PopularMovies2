@@ -86,7 +86,8 @@ public class MovieFragment extends Fragment {
                     putExtra("image", movie.getImage()).
                     putExtra("year", movie.getYear()).
                     putExtra("description", movie.getDesc()).
-                    putExtra("rating", movie.getRating());
+                    putExtra("rating", movie.getRating()).
+                    putExtra("id", movie.getMovieID());
             startActivity(intent);
         }
     });
@@ -108,12 +109,6 @@ public class MovieFragment extends Fragment {
     public void onStart() {
         super.onStart();
         updateMovies();
-    }
-
-    public void prefChangeUpdate (SharedPreferences sharedPreferences, String key) {
-        if (key.equals(R.string.pref_sort_key)) {
-            updateMovies();
-        }
     }
 
 public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
@@ -180,6 +175,7 @@ public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
                 String year = post.optString("release_date");
                 String desc = post.optString("overview");
                 String rating = post.optString("vote_average");
+                String id =post.optString("id");
 
                 movie = new Movie();
                 movie.setTitle(title);
@@ -187,7 +183,8 @@ public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
                 movie.setDesc(desc);
                 movie.setRating(rating);
                 movie.setImage(fullPosterPath);
-
+                movie.setMovieID(id);
+                Log.v(LOG_TAG,"movie id: "+id);
                 mMovie.add(movie);
             }
         } catch (JSONException e) {

@@ -2,22 +2,41 @@ package com.example.drew.popularmovies;
 
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+
 
 public class DetailsActivity extends ActionBarActivity {
     private TextView titleTextView;
     private ImageView imageView;
+    private static final String LOG_TAG = GridViewActivity.class.getSimpleName();
+    private ArrayAdapter<String> mReviewAdapter;
+    private String mMovieID=null;
 
 
     private TextView descTextView;
@@ -42,6 +61,7 @@ public class DetailsActivity extends ActionBarActivity {
         String titleYear = title + " (" + year + ")";
         float fRating = Float.parseFloat(rating);
         ratingBar1.setRating(fRating / 2);
+        mMovieID=bundle.getString("id");
 
         titleTextView = (TextView) findViewById(R.id.title);
         titleTextView.setText(titleYear);
@@ -51,7 +71,172 @@ public class DetailsActivity extends ActionBarActivity {
 
         imageView = (ImageView) findViewById(R.id.movie_image);
         Picasso.with(this).load(image).into(imageView);
+
+        //call asynctask for url call with append trailer and reviews
+
+        mReviewAdapter =new ArrayAdapter<String>(
+                this,
+                R.layout.list_item_trailer,
+                R.id.list_item_trailer_textview,
+                new ArrayList<String>());
+
+
+        ListView listView =(ListView)findViewById(R.id.listview_trailers);
+        listView.setAdapter(mReviewAdapter);
+
+        //might put onitemclicklistener here
+        updateReview();
+
+
     }
+
+
+    private void updateReview(){
+        FetchReviewTask reviewTask = new FetchReviewTask();
+        reviewTask.execute(mMovieID);
+    }
+
+
+    public class FetchReviewTask extends AsyncTask<String, Void, ArrayList<String >>{
+
+        private ArrayList<String>getReviewDataFromJson(String reviewJsonStr)
+        throws JSONException
+
+        {
+            final String TMDB_RESULTS="results";
+            final String TMDB_REVIEWS = "reviews";
+            final String TMDB_AUTHOR= "author";
+            final String TMDB_CONTENT="content";
+
+            JSONObject reviewJson = new JSONObject(reviewJsonStr);
+            JSONArray reviewArray = reviewJson.getJSONObject(TMDB_REVIEWS).getJSONArray(TMDB_RESULTS);
+
+            ArrayList<String> resultStrs=new ArrayList<String>();
+
+            for(int i=0; i<reviewArray.length();i++){
+                String author;
+                String content;
+
+
+                JSONObject review =reviewArray.getJSONObject(i);
+
+                author=review.getString(TMDB_AUTHOR);
+                content=review.getString(TMDB_CONTENT);
+
+                resultStrs.add(content+" -"+author);
+
+
+            }
+            for (String s : resultStrs){
+                Log.v(LOG_TAG, "Review entry: "+ s);
+            }
+            return resultStrs;
+
+        }
+        @Override
+        protected ArrayList<String> doInBackground(String... params) {
+            if (params.length == 0) {
+                return null;
+            }
+
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            String reviewJsonStr = null;
+
+            try
+
+            {
+//https://api.themoviedb.org/3/movie/76341?api_key=bb99fbc46e9777b057575f946a19f3f3&append_to_response=trailers,reviews
+                String baseURL="https://api.themoviedb.org/3/movie/";
+                String movieID=mMovieID;
+                String api_key="?api_key=bb99fbc46e9777b057575f946a19f3f3";
+                String append="&append_to_response=reviews,videos";
+                String fullPath=baseURL+movieID+api_key+append;
+
+                URL url = new URL(fullPath);
+                Log.v(LOG_TAG, "Built Uri " + url);
+
+                // Create the request to OpenWeatherMap, and open the connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    reviewJsonStr = null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return null;// I commented this out forecastJsonStr = null;
+                }
+                reviewJsonStr = buffer.toString();
+
+                Log.v(LOG_TAG, "Reivew JSON String: " + reviewJsonStr);
+
+            } catch (
+                    IOException e
+                    )
+
+            {
+                Log.e("PlaceholderFragment", "Error ", e);
+                // If the code didn't successfully get the weather data, there's no point in attempting
+                // to parse it.
+                reviewJsonStr= null;
+            } finally
+
+            {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e("PlaceholderFragment", "Error closing stream", e);
+                    }
+                }
+            }
+
+            try {
+                return getReviewDataFromJson(reviewJsonStr);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
+
+
+            return null;
+//end copied from Git
+        }
+        @Override
+        protected void onPostExecute(ArrayList<String> result){
+            if(result != null){
+                mReviewAdapter.clear();
+                for(String dayForecastStr : result){
+                    mReviewAdapter.add(dayForecastStr);
+                }
+            }
+        }
+
+
+
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -69,6 +254,7 @@ public class DetailsActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
 
     }
+
 
 
 }
