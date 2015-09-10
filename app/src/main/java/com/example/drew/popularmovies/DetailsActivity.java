@@ -36,6 +36,8 @@ public class DetailsActivity extends TabActivity {
     private ImageView imageView;
     private static final String LOG_TAG = GridViewActivity.class.getSimpleName();
     private ArrayAdapter<String> mReviewAdapter;
+    private ArrayAdapter<String> mTrailerAdapter;
+
     private String mMovieID=null;
 
 
@@ -58,6 +60,7 @@ public class DetailsActivity extends TabActivity {
 
         TabHost.TabSpec tab1 = tabHost.newTabSpec("About");
         TabHost.TabSpec tab2 = tabHost.newTabSpec("Reviews");
+        TabHost.TabSpec tab3 = tabHost.newTabSpec("Trailers");
 
 
         // Set the Tab name and Activity
@@ -66,14 +69,18 @@ public class DetailsActivity extends TabActivity {
         tab1.setContent(R.id.desc);
 
         tab2.setIndicator("Reviews");
-        tab2.setContent(R.id.listview_trailers);
+        tab2.setContent(R.id.listview_reviews);
 
+        tab3.setIndicator("Trailers");
+        tab3.setContent(R.id.listview_trailers);
 
 
         /** Add the tabs  to the TabHost to display. */
         tabHost.setup();
         tabHost.addTab(tab1);
         tabHost.addTab(tab2);
+        tabHost.addTab(tab3);
+
 
 
 
@@ -105,17 +112,28 @@ public class DetailsActivity extends TabActivity {
 
         mReviewAdapter =new ArrayAdapter<String>(
                 this,
-                R.layout.list_item_trailer,
-                R.id.list_item_trailer_textview,
+                R.layout.list_item_review,
+                R.id.list_item_review_textview,
                 new ArrayList<String>());
 
 
-        ListView listView =(ListView)findViewById(R.id.listview_trailers);
+        ListView listView =(ListView)findViewById(R.id.listview_reviews);
         listView.setAdapter(mReviewAdapter);
 
         //might put onitemclicklistener here
         updateReview();
 
+
+        mTrailerAdapter =new ArrayAdapter<String>(
+                this,
+                R.layout.list_item_trailer,
+                R.id.list_item_trailer_textview,
+                new ArrayList<String>());
+
+        ListView trailerListView =(ListView)findViewById(R.id.listview_trailers);
+        trailerListView.setAdapter(mTrailerAdapter);
+
+        updateTrailers();
 
     }
 
@@ -123,6 +141,11 @@ public class DetailsActivity extends TabActivity {
     private void updateReview(){
         FetchReviewTask reviewTask = new FetchReviewTask();
         reviewTask.execute(mMovieID);
+    }
+
+    private void updateTrailers(){
+        FetchTrailerTask trailerTask = new FetchTrailerTask();
+        trailerTask.execute(mMovieID);
     }
 
 
@@ -255,12 +278,157 @@ public class DetailsActivity extends TabActivity {
         protected void onPostExecute(ArrayList<String> result){
             if(result != null){
                 mReviewAdapter.clear();
-                for(String dayForecastStr : result){
-                    mReviewAdapter.add(dayForecastStr);
+                for(String reviewString : result){
+                    mReviewAdapter.add(reviewString);
                 }
             }
-            if(result.isEmpty()){
+            if(result==null||result.isEmpty()){
                 mReviewAdapter.add("No reviews in the movie database yet.");
+            }
+
+        }
+
+
+
+    }
+
+
+
+    public class FetchTrailerTask extends AsyncTask<String, Void, ArrayList<String >>{
+
+        private ArrayList<String>getTrailerDataFromJson(String trailerJsonStr)
+                throws JSONException
+
+        {
+            final String TMDB_YOUTUBE="results";
+            final String TMDB_TRAILERS = "videos";
+            final String TMDB_NAME= "name";
+            final String TMDB_SOURCE="key";
+
+            JSONObject trailerJson = new JSONObject(trailerJsonStr);
+            JSONArray trailerArray = trailerJson.getJSONObject(TMDB_TRAILERS).getJSONArray(TMDB_YOUTUBE);
+
+            ArrayList<String> resultStrs=new ArrayList<String>();
+
+            for(int i=0; i<trailerArray.length();i++){
+                String name;
+                String source;
+
+
+                JSONObject trailer =trailerArray.getJSONObject(i);
+
+                name=trailer.getString(TMDB_NAME);
+                source=trailer.getString(TMDB_SOURCE);
+
+                resultStrs.add(name+"\n"+"-"+source);
+
+
+            }
+            for (String s : resultStrs){
+                Log.v(LOG_TAG, "Trailer entry: "+ s);
+            }
+            return resultStrs;
+
+        }
+        @Override
+        protected ArrayList<String> doInBackground(String... params) {
+            if (params.length == 0) {
+                return null;
+            }
+
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            String trailerJsonStr = null;
+
+            try
+
+            {
+//https://api.themoviedb.org/3/movie/76341?api_key=bb99fbc46e9777b057575f946a19f3f3&append_to_response=trailers,reviews
+                String baseURL="https://api.themoviedb.org/3/movie/";
+                String movieID=mMovieID;
+                String api_key="?api_key=bb99fbc46e9777b057575f946a19f3f3";
+                String append="&append_to_response=reviews,videos";
+                String fullPath=baseURL+movieID+api_key+append;
+
+                URL url = new URL(fullPath);
+                Log.v(LOG_TAG, "Built Uri " + url);
+
+                // Create the request to OpenWeatherMap, and open the connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) {
+                    // Nothing to do.
+                   trailerJsonStr = null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return null;// I commented this out forecastJsonStr = null;
+                }
+                trailerJsonStr = buffer.toString();
+
+                Log.v(LOG_TAG, "Trailer JSON String: " + trailerJsonStr);
+
+            } catch (
+                    IOException e
+                    )
+
+            {
+                Log.e("PlaceholderFragment", "Error ", e);
+                // If the code didn't successfully get the weather data, there's no point in attempting
+                // to parse it.
+                trailerJsonStr= null;
+            } finally
+
+            {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e("PlaceholderFragment", "Error closing stream", e);
+                    }
+                }
+            }
+
+            try {
+                return getTrailerDataFromJson(trailerJsonStr);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
+
+
+            return null;
+//end copied from Git
+        }
+        @Override
+        protected void onPostExecute(ArrayList<String> result){
+            if(result != null){
+                mTrailerAdapter.clear();
+                for(String reviewString : result){
+                    mTrailerAdapter.add(reviewString);
+                }
+            }
+            if(result==null||result.isEmpty()){
+                mTrailerAdapter.add("No trailers for this film in the movie database yet.");
             }
 
         }

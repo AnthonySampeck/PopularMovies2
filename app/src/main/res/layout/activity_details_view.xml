@@ -63,14 +63,13 @@
             <TextView
                 android:id="@+id/desc"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="194dp"
                 android:padding="1dp"
                 android:layout_gravity="bottom"
                 android:textColor="#fff"
-                android:textSize="20dp"
+                android:textSize="16dp"
                 android:background="#be000000"
                 android:scrollbars = "vertical"
-                android:maxLines="8"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"/>
@@ -88,7 +87,23 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:id="@+id/listview_reviews" />
+
+        <ListView
+
+            android:layout_width="match_parent"
+            android:layout_height="194dp"
+            android:padding="1dp"
+            android:layout_gravity="bottom"
+            android:textColor="#fff"
+            android:textSize="20dp"
+            android:background="#be000000"
+
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:id="@+id/listview_trailers" />
+
     </FrameLayout>
 
 </RelativeLayout>
