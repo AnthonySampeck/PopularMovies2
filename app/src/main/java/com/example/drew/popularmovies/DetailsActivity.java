@@ -140,20 +140,16 @@ public class DetailsActivity extends TabActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String trailer = mTrailerAdapter.getItem(position);
-                String[] splitStr = trailer.split("\\s+");
-                String trailerKey=splitStr[0];
-                Log.v(LOG_TAG,"trailer from position: "+ trailer);
-                String videoUrl = "https://www.youtube.com/watch?v="+trailerKey;
-                Log.v(LOG_TAG,"videoURL: "+videoUrl);
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl));
-                startActivity(intent);
+                String[] splitStr = trailer.split("\\n+");
+
+                if(splitStr.length>1) {
+                String trailerPath=splitStr[1];
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(trailerPath));
+                    startActivity(intent);
+                }
 
             }
         });
-
-
-
-
 
         updateTrailers();
 
@@ -342,7 +338,7 @@ public class DetailsActivity extends TabActivity {
                 name=trailer.getString(TMDB_NAME);
                 source=trailer.getString(TMDB_SOURCE);
 
-                resultStrs.add(source+"\n"+"-"+name);
+                resultStrs.add(name+"\n"+"https://www.youtube.com/watch?v="+source);
 
 
             }
