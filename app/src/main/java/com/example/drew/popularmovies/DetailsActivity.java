@@ -1,11 +1,10 @@
 package com.example.drew.popularmovies;
 
 
+import android.app.TabActivity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
@@ -14,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -31,7 +31,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-public class DetailsActivity extends ActionBarActivity {
+public class DetailsActivity extends TabActivity {
     private TextView titleTextView;
     private ImageView imageView;
     private static final String LOG_TAG = GridViewActivity.class.getSimpleName();
@@ -46,8 +46,37 @@ public class DetailsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_details_view);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+        //ActionBar actionBar = getSupportActionBar();
+        //actionBar.hide();
+
+
+        setContentView(R.layout.activity_details_view);
+
+        // create the TabHost that will contain the Tabs
+        TabHost tabHost = (TabHost)findViewById(android.R.id.tabhost);
+
+
+        TabHost.TabSpec tab1 = tabHost.newTabSpec("About");
+        TabHost.TabSpec tab2 = tabHost.newTabSpec("Reviews");
+
+
+        // Set the Tab name and Activity
+        // that will be opened when particular Tab will be selected
+        tab1.setIndicator("About");
+        tab1.setContent(R.id.desc);
+
+        tab2.setIndicator("Reviews");
+        tab2.setContent(R.id.listview_trailers);
+
+
+
+        /** Add the tabs  to the TabHost to display. */
+        tabHost.setup();
+        tabHost.addTab(tab1);
+        tabHost.addTab(tab2);
+
+
+
 
         final RatingBar ratingBar1 = (RatingBar) findViewById(R.id.ratingbar1);
 
@@ -123,7 +152,7 @@ public class DetailsActivity extends ActionBarActivity {
                 author=review.getString(TMDB_AUTHOR);
                 content=review.getString(TMDB_CONTENT);
 
-                resultStrs.add(content+" -"+author);
+                resultStrs.add(content+"\n"+"-"+author);
 
 
             }
@@ -230,6 +259,10 @@ public class DetailsActivity extends ActionBarActivity {
                     mReviewAdapter.add(dayForecastStr);
                 }
             }
+            if(result.isEmpty()){
+                mReviewAdapter.add("No reviews in the movie database yet.");
+            }
+
         }
 
 
