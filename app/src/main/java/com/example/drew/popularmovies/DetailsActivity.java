@@ -3,12 +3,15 @@ package com.example.drew.popularmovies;
 
 import android.app.TabActivity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -132,6 +135,25 @@ public class DetailsActivity extends TabActivity {
 
         ListView trailerListView =(ListView)findViewById(R.id.listview_trailers);
         trailerListView.setAdapter(mTrailerAdapter);
+
+        trailerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                String trailer = mTrailerAdapter.getItem(position);
+                String[] splitStr = trailer.split("\\s+");
+                String trailerKey=splitStr[0];
+                Log.v(LOG_TAG,"trailer from position: "+ trailer);
+                String videoUrl = "https://www.youtube.com/watch?v="+trailerKey;
+                Log.v(LOG_TAG,"videoURL: "+videoUrl);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl));
+                startActivity(intent);
+
+            }
+        });
+
+
+
+
 
         updateTrailers();
 
@@ -320,7 +342,7 @@ public class DetailsActivity extends TabActivity {
                 name=trailer.getString(TMDB_NAME);
                 source=trailer.getString(TMDB_SOURCE);
 
-                resultStrs.add(name+"\n"+"-"+source);
+                resultStrs.add(source+"\n"+"-"+name);
 
 
             }
