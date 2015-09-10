@@ -46,8 +46,8 @@ public class DetailsActivity extends TabActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_details_view);
-        //ActionBar actionBar = getSupportActionBar();
-        //actionBar.hide();
+
+
 
 
         setContentView(R.layout.activity_details_view);
