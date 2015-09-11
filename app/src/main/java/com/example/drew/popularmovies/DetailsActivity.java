@@ -3,9 +3,11 @@ package com.example.drew.popularmovies;
 
 import android.app.TabActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
@@ -13,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
@@ -56,6 +59,31 @@ public class DetailsActivity extends TabActivity {
 
 
         setContentView(R.layout.activity_details_view);
+
+        final ImageButton button = (ImageButton) findViewById(R.id.favorite_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            private boolean state=false;
+            public void onClick(View v) {
+                if(state){
+                    state=false;
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    String sortPref= preferences.getString(getString(R.string.pref_sort_key),"sort_by=popularity.desc");
+
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("sort",sortPref+","+mMovieID);
+                    editor.apply();
+
+                    String favorites = preferences.getString(getString(R.string.pref_sort_key),
+                            getString(R.string.pref_sort_default));
+                    Log.v(LOG_TAG,"editor: " +favorites);
+                }else {
+                    state=true;
+                    Log.v(LOG_TAG,"fav");
+                }
+
+            }
+        });
+
 
         // create the TabHost that will contain the Tabs
         TabHost tabHost = (TabHost)findViewById(android.R.id.tabhost);
@@ -110,6 +138,8 @@ public class DetailsActivity extends TabActivity {
 
         imageView = (ImageView) findViewById(R.id.movie_image);
         Picasso.with(this).load(image).into(imageView);
+
+
 
         //call asynctask for url call with append trailer and reviews
 
