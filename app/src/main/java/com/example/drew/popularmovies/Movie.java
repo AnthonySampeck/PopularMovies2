@@ -21,8 +21,7 @@ public class Movie {
 
     @Override
     public String toString() {
-        return "Book [id=" + id + ", title=" + title + ", id=" + id
-                + "]";
+        return "{\"results\":[{\"poster_path\":\"" + image + "\"}]}";
     }
 
     public String getImage(){return image;}

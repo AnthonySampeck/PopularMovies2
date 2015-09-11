@@ -102,13 +102,9 @@ public class MovieFragment extends Fragment {
         mSort = prefs.getString("sort", "sort_by=popularity.desc");
 
 
-        if(mSort.startsWith("sort_by")) {
             String fullPath = mBase_URL + mSort + mApi_key;
             movieTask.execute(fullPath);
-        }
-            else{
-                Log.v(LOG_TAG,"favorite");
-            }
+
 
 
 
@@ -131,9 +127,28 @@ public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
             int status = httpResponse.getStatusLine().getStatusCode();
 
             if (status == 200){
+
+                if(mSort.startsWith("sort_by")){
                 String response = streamToString(httpResponse.getEntity().getContent());
                 parseResult(response);
-                result = 1;
+                Log.v(LOG_TAG,"response to Parse method: "+response);
+                result = 1;}
+
+                else{
+                    Movie movie =new Movie();
+                    movie.setImage("/L14yY4FPUsMm17VJ9FPc1eKhE6.jpg");
+
+
+                    String testStr=movie.toString();
+                    Log.v(LOG_TAG,"fav to parse results: "+testStr);
+                    parseResult(testStr);
+
+                    result=1;
+
+                }
+
+
+
             } else {
                 result = 0;
                 Log.v(LOG_TAG,"mSort: "+mSort);
@@ -194,7 +209,7 @@ public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
                 movie.setRating(rating);
                 movie.setImage(fullPosterPath);
                 movie.setMovieID(id);
-                Log.v(LOG_TAG,"movie id: "+id);
+                Log.v(LOG_TAG,"movie id: "+id +"poster_path: "+fullPosterPath);
                 mMovie.add(movie);
             }
         } catch (JSONException e) {
