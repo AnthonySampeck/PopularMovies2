@@ -3,11 +3,9 @@ package com.example.drew.popularmovies;
 
 import android.app.TabActivity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
@@ -43,7 +41,7 @@ public class DetailsActivity extends TabActivity {
     private static final String LOG_TAG = GridViewActivity.class.getSimpleName();
     private ArrayAdapter<String> mReviewAdapter;
     private ArrayAdapter<String> mTrailerAdapter;
-
+    private String mTitle;
     private String mMovieID=null;
 
 
@@ -58,27 +56,23 @@ public class DetailsActivity extends TabActivity {
 
 
 
-        setContentView(R.layout.activity_details_view);
 
-        final ImageButton button = (ImageButton) findViewById(R.id.favorite_button);
+        ImageButton button = (ImageButton) findViewById(R.id.favorite_button);
         button.setOnClickListener(new View.OnClickListener() {
-            private boolean state=false;
+            private boolean state = false;
+
             public void onClick(View v) {
-                if(state){
-                    state=false;
-                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    String sortPref= preferences.getString(getString(R.string.pref_sort_key),"sort_by=popularity.desc");
+                if (state) {
+                    state = false;
+                    Log.v(LOG_TAG, "unfav" + mMovieID);
+                    //remove movieID from database list that will generate from updateMovie else statement
 
-                    SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString("sort",sortPref+","+mMovieID);
-                    editor.apply();
+                } else {
+                    state = true;
+                    //add movieID to database list that will generate from updateMovie else statement
+                    Movie movie =new Movie(mTitle,mMovieID);
+                    Log.v(LOG_TAG, "fav: " + movie);
 
-                    String favorites = preferences.getString(getString(R.string.pref_sort_key),
-                            getString(R.string.pref_sort_default));
-                    Log.v(LOG_TAG,"editor: " +favorites);
-                }else {
-                    state=true;
-                    Log.v(LOG_TAG,"fav");
                 }
 
             }
@@ -120,12 +114,12 @@ public class DetailsActivity extends TabActivity {
 
         Bundle bundle = getIntent().getExtras();
 
-        String title = bundle.getString("title");
+        mTitle = bundle.getString("title");
         String image = bundle.getString("image");
         String desc = bundle.getString("description");
         String year = bundle.getString("year");
         String rating = bundle.getString("rating");
-        String titleYear = title + " (" + year + ")";
+        String titleYear = mTitle + " (" + year + ")";
         float fRating = Float.parseFloat(rating);
         ratingBar1.setRating(fRating / 2);
         mMovieID=bundle.getString("id");

@@ -52,7 +52,7 @@ public class MovieFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.forecastfragment, menu);
+        inflater.inflate(R.menu.movie_fragment, menu);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -100,14 +100,16 @@ public class MovieFragment extends Fragment {
         AsyncHttpTask movieTask = new AsyncHttpTask();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mSort = prefs.getString("sort", "sort_by=popularity.desc");
-        Log.v(LOG_TAG,"mSort: "+mSort);
+
 
         if(mSort.startsWith("sort_by")) {
             String fullPath = mBase_URL + mSort + mApi_key;
             movieTask.execute(fullPath);
-        }else{
-            Log.v(LOG_TAG,"mSort: "+mSort);
         }
+            else{
+                Log.v(LOG_TAG,"favorite");
+            }
+
 
 
     }
@@ -128,12 +130,13 @@ public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
             HttpResponse httpResponse = httpclient.execute(new HttpGet(params[0]));
             int status = httpResponse.getStatusLine().getStatusCode();
 
-            if (status == 200) {
+            if (status == 200){
                 String response = streamToString(httpResponse.getEntity().getContent());
                 parseResult(response);
                 result = 1;
             } else {
                 result = 0;
+                Log.v(LOG_TAG,"mSort: "+mSort);
             }
         } catch (Exception e) {
             Log.d(LOG_TAG, e.getLocalizedMessage());

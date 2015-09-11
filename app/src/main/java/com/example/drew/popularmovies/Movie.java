@@ -12,6 +12,19 @@ public class Movie {
 
     public Movie() {super();}
 
+    public Movie(String title, String id) {
+        super();
+        this.title = title;
+        this.id = id;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Book [id=" + id + ", title=" + title + ", id=" + id
+                + "]";
+    }
+
     public String getImage(){return image;}
 
     public void setImage(String image) {this.image=image;}
