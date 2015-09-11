@@ -100,8 +100,15 @@ public class MovieFragment extends Fragment {
         AsyncHttpTask movieTask = new AsyncHttpTask();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mSort = prefs.getString("sort", "sort_by=popularity.desc");
-        String fullPath = mBase_URL + mSort + mApi_key;
-        movieTask.execute(fullPath);
+        Log.v(LOG_TAG,"mSort: "+mSort);
+
+        if(mSort.startsWith("sort_by")) {
+            String fullPath = mBase_URL + mSort + mApi_key;
+            movieTask.execute(fullPath);
+        }else{
+            Log.v(LOG_TAG,"mSort: "+mSort);
+        }
+
 
     }
 
