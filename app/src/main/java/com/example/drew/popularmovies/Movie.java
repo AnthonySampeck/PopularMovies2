@@ -21,7 +21,7 @@ public class Movie {
 
     @Override
     public String toString() {
-        return "{\"results\":[{\"poster_path\":\"" + image + "\"}]}";
+        return "{\"results\":[{\"poster_path\":\"" + image + "\",\"title\":\"" + title + "\",\"overview\":\"" + desc + "\",\"release_date\":\"" + year + "\",\"vote_average\":\"" + rating + "\",\"id\":"+id+"}]}";
     }
 
     public String getImage(){return image;}

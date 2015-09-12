@@ -136,8 +136,12 @@ public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
 
                 else{
                     Movie movie =new Movie();
-                    movie.setImage("/L14yY4FPUsMm17VJ9FPc1eKhE6.jpg");
-
+                    movie.setImage("/t90Y3G8UGQp0f0DrP60wRu9gfrH.jpg");
+                    movie.setTitle("Avengers: Age of Ultron");
+                    movie.setRating("7.7");
+                    movie.setDesc("When Tony Stark tries to jumpstart a dormant peacekeeping program, things go awry and Earth’s Mightiest Heroes are put to the ultimate test as the fate of the planet hangs in the balance. As the villainous Ultron emerges, it is up to The Avengers to stop him from enacting his terrible plans, and soon uneasy alliances and unexpected action pave the way for an epic and unique global adventure.");
+                    movie.setYear("2015-05-01");
+                    movie.setMovieID("99861");
 
                     String testStr=movie.toString();
                     Log.v(LOG_TAG,"fav to parse results: "+testStr);
