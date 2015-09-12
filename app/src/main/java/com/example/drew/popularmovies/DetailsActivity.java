@@ -43,6 +43,10 @@ public class DetailsActivity extends TabActivity {
     private ArrayAdapter<String> mTrailerAdapter;
     private String mTitle;
     private String mMovieID=null;
+    private String mImage;
+    private String mRating;
+    private String mDesc;
+    private String mYear;
 
 
     private TextView descTextView;
@@ -64,14 +68,21 @@ public class DetailsActivity extends TabActivity {
             public void onClick(View v) {
                 if (state) {
                     state = false;
-                    Log.v(LOG_TAG, "unfav" + mMovieID);
                     //remove movieID from database list that will generate from updateMovie else statement
+                    MySQLiteHelper db = new MySQLiteHelper(getApplicationContext());
+                    db.deleteBook(new Movie(mTitle,mMovieID,mYear,mRating,mDesc,mImage));
+                    Log.v(LOG_TAG, "All Favorites in db: " + db.getAllBooks());
+
 
                 } else {
                     state = true;
                     //add movieID to database list that will generate from updateMovie else statement
-                    //Movie movie =new Movie(mTitle,mMovieID);
-                    Log.v(LOG_TAG, "fav: " );
+                    //Movie movie =new Movie(mTitle,mMovieID);\
+
+                    MySQLiteHelper db = new MySQLiteHelper(getApplicationContext());
+                    db.addBook(new Movie(mTitle,mMovieID,mYear,mRating,mDesc,mImage));
+
+                    Log.v(LOG_TAG, "All Favorites in db: "+db.getAllBooks());
 
                 }
 
@@ -115,23 +126,23 @@ public class DetailsActivity extends TabActivity {
         Bundle bundle = getIntent().getExtras();
 
         mTitle = bundle.getString("title");
-        String image = bundle.getString("image");
-        String desc = bundle.getString("description");
-        String year = bundle.getString("year");
-        String rating = bundle.getString("rating");
-        String titleYear = mTitle + " (" + year + ")";
-        float fRating = Float.parseFloat(rating);
+        mImage = bundle.getString("image");
+        mDesc = bundle.getString("description");
+        mYear = bundle.getString("year");
+        mRating = bundle.getString("rating");
+        String titleYear = mTitle + " (" + mYear + ")";
+        float fRating = Float.parseFloat(mRating);
         ratingBar1.setRating(fRating / 2);
         mMovieID=bundle.getString("id");
 
         titleTextView = (TextView) findViewById(R.id.title);
         titleTextView.setText(titleYear);
         descTextView = (TextView) findViewById(R.id.desc);
-        descTextView.setText(desc);
+        descTextView.setText(mDesc);
         descTextView.setMovementMethod(new ScrollingMovementMethod());
 
         imageView = (ImageView) findViewById(R.id.movie_image);
-        Picasso.with(this).load(image).into(imageView);
+        Picasso.with(this).load(mImage).into(imageView);
 
 
 

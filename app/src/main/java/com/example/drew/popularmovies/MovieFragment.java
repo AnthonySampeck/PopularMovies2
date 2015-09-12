@@ -135,15 +135,11 @@ public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
                 result = 1;}
 
                 else{
-                    Movie movie =new Movie("Avengers: Age of Ultron","99861","2015-05-01","7.7",
-                            "When Tony Stark tries to jumpstart a dormant peacekeeping program, things go awry and Earth’s Mightiest Heroes are put to the ultimate test as the fate of the planet hangs in the balance. As the villainous Ultron emerges, it is up to The Avengers to stop him from enacting his terrible plans, and soon uneasy alliances and unexpected action pave the way for an epic and unique global adventure.",
-                            "/t90Y3G8UGQp0f0DrP60wRu9gfrH.jpg");
-                    Movie movie2 =new Movie("Dino","99861","2015-05-01","7.7",
-                            "Howdy",
-                            "/dkMD5qlogeRMiEixC4YNPUvax2T.jpg");
+                    MySQLiteHelper db = new MySQLiteHelper(getActivity());
 
+                    String favorites = db.getAllBooks().toString();
 
-                    String testStr="{\"results\":["+movie.toString()+","+movie2.toString()+"]}";
+                    String testStr="{\"results\":"+favorites+"}";
                     Log.v(LOG_TAG,"fav to parse results: "+testStr);
                     parseResult(testStr);
 

@@ -25,7 +25,11 @@ public class Movie {
 
     @Override
     public String toString() {
-        return "{\"poster_path\":\"" + image + "\",\"title\":\"" + title + "\",\"overview\":\"" + desc + "\",\"release_date\":\"" + year + "\",\"vote_average\":\"" + rating + "\",\"id\":"+id+"}";
+        desc=desc.replace("\"","'");
+        title=title.replace("\"","'");
+        return "{\"poster_path\":\"" + image + "\",\"title\":\"" + title + "\",\"overview\":\"" + (desc) + "\",\"release_date\":\"" + year + "\",\"vote_average\":\"" + rating + "\",\"id\":"+id+"}";
+
+
     }
 
     public String getImage(){return image;}
