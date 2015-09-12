@@ -12,16 +12,20 @@ public class Movie {
 
     public Movie() {super();}
 
-    public Movie(String title, String id) {
+    public Movie(String title, String id, String year, String rating, String desc, String image) {
         super();
         this.title = title;
         this.id = id;
+        this.rating=rating;
+        this.desc=desc;
+        this.image=image;
+        this.year=year;
     }
 
 
     @Override
     public String toString() {
-        return "{\"results\":[{\"poster_path\":\"" + image + "\",\"title\":\"" + title + "\",\"overview\":\"" + desc + "\",\"release_date\":\"" + year + "\",\"vote_average\":\"" + rating + "\",\"id\":"+id+"}]}";
+        return "{\"poster_path\":\"" + image + "\",\"title\":\"" + title + "\",\"overview\":\"" + desc + "\",\"release_date\":\"" + year + "\",\"vote_average\":\"" + rating + "\",\"id\":"+id+"}";
     }
 
     public String getImage(){return image;}

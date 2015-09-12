@@ -70,8 +70,8 @@ public class DetailsActivity extends TabActivity {
                 } else {
                     state = true;
                     //add movieID to database list that will generate from updateMovie else statement
-                    Movie movie =new Movie(mTitle,mMovieID);
-                    Log.v(LOG_TAG, "fav: " + movie);
+                    //Movie movie =new Movie(mTitle,mMovieID);
+                    Log.v(LOG_TAG, "fav: " );
 
                 }
 
