@@ -111,10 +111,12 @@ public class MovieFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
         updateMovies();
     }
+
+
 
 public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
 

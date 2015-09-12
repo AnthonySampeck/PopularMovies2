@@ -2,12 +2,14 @@ package com.example.drew.popularmovies;
 
 
 import android.app.TabActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +21,7 @@ import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -42,12 +45,14 @@ public class DetailsActivity extends TabActivity {
     private ArrayAdapter<String> mReviewAdapter;
     private ArrayAdapter<String> mTrailerAdapter;
     private String mTitle;
-    private String mMovieID=null;
+    private String mMovieID;
     private String mImage;
     private String mRating;
     private String mDesc;
     private String mYear;
+    private ImageButton mButton;
 
+    private String mSort;
 
     private TextView descTextView;
 
@@ -57,37 +62,6 @@ public class DetailsActivity extends TabActivity {
 
         setContentView(R.layout.activity_details_view);
 
-
-
-
-
-        ImageButton button = (ImageButton) findViewById(R.id.favorite_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            private boolean state = false;
-
-            public void onClick(View v) {
-                if (state) {
-                    state = false;
-                    //remove movieID from database list that will generate from updateMovie else statement
-                    MySQLiteHelper db = new MySQLiteHelper(getApplicationContext());
-                    db.deleteBook(new Movie(mTitle,mMovieID,mYear,mRating,mDesc,mImage));
-                    Log.v(LOG_TAG, "All Favorites in db: " + db.getAllBooks());
-
-
-                } else {
-                    state = true;
-                    //add movieID to database list that will generate from updateMovie else statement
-                    //Movie movie =new Movie(mTitle,mMovieID);\
-
-                    MySQLiteHelper db = new MySQLiteHelper(getApplicationContext());
-                    db.addBook(new Movie(mTitle,mMovieID,mYear,mRating,mDesc,mImage));
-
-                    Log.v(LOG_TAG, "All Favorites in db: "+db.getAllBooks());
-
-                }
-
-            }
-        });
 
 
         // create the TabHost that will contain the Tabs
@@ -134,6 +108,70 @@ public class DetailsActivity extends TabActivity {
         float fRating = Float.parseFloat(mRating);
         ratingBar1.setRating(fRating / 2);
         mMovieID=bundle.getString("id");
+
+
+
+
+
+
+
+         mButton = (ImageButton) findViewById(R.id.favorite_button);
+
+
+        mButton.setOnClickListener(new View.OnClickListener() {
+
+            MySQLiteHelper cb = new MySQLiteHelper(getApplicationContext());
+            boolean mState = cb.getBook(mMovieID);
+
+            public void onClick(View v) {
+                if (mState) {
+                    //remove movieID from database list that will generate from updateMovie else statement
+                    MySQLiteHelper db = new MySQLiteHelper(getApplicationContext());
+                    db.deleteBook(new Movie(mTitle, mMovieID, mYear, mRating, mDesc, mImage));
+                    Log.v(LOG_TAG, "All Favorites in db: " + db.getAllBooks());
+                    Log.v(LOG_TAG, "unfav");
+                    mState = false;
+
+                    Context context = getApplicationContext();
+                    CharSequence text = mTitle + " removed from favorites";
+                    int duration = Toast.LENGTH_SHORT;
+
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.setGravity(Gravity.CENTER | Gravity.TOP, 0, 0);
+
+                    toast.show();
+
+                } else if (!mState) {
+                    //add movieID to database list that will generate from updateMovie else statement
+                    //Movie movie =new Movie(mTitle,mMovieID);\
+
+                    MySQLiteHelper db = new MySQLiteHelper(getApplicationContext());
+                    db.addBook(new Movie(mTitle, mMovieID, mYear, mRating, mDesc, mImage));
+
+                    Context context = getApplicationContext();
+                    CharSequence text = mTitle + " added to favorites";
+                    int duration = Toast.LENGTH_SHORT;
+
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.setGravity(Gravity.CENTER | Gravity.TOP, 0, 0);
+
+                    toast.show();
+
+                    Log.v(LOG_TAG, "fav");
+
+
+                    Log.v(LOG_TAG, "All Favorites in db: " + db.getAllBooks());
+
+                    mState = true;
+
+                }
+
+
+            }
+        });
+
+
+
 
         titleTextView = (TextView) findViewById(R.id.title);
         titleTextView.setText(titleYear);
@@ -189,6 +227,8 @@ public class DetailsActivity extends TabActivity {
         updateTrailers();
 
     }
+
+
 
 
     private void updateReview(){

@@ -10,6 +10,8 @@ public class Movie {
     private String key;
     private String name;
 
+    private Integer dbid;
+
     public Movie() {super();}
 
     public Movie(String title, String id, String year, String rating, String desc, String image) {
@@ -31,6 +33,13 @@ public class Movie {
 
 
     }
+
+
+    public void setDbid(Integer dbid) {
+        this.dbid = dbid;
+    }
+
+    public Integer getDbid(){return dbid;}
 
     public String getImage(){return image;}
 
