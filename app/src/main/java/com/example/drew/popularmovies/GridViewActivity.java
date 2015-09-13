@@ -1,12 +1,14 @@
 package com.example.drew.popularmovies;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class GridViewActivity extends ActionBarActivity {
+public class GridViewActivity extends ActionBarActivity implements MovieFragment.Callback {
 
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
@@ -63,6 +65,31 @@ public class GridViewActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
 
+
+    }
+
+    @Override
+    public void onItemSelected(Uri contentUri) {
+        if (mTwoPane) {
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            Bundle args = new Bundle();
+            args.putParcelable(DetailsFragment.DETAIL_URI, contentUri);
+
+            DetailsFragment fragment = new DetailsFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, DetailsActivity.class)
+                    .setData(contentUri);
+            Log.d("setData:", contentUri.toString());
+
+            startActivity(intent);
+        }
 
     }
 }

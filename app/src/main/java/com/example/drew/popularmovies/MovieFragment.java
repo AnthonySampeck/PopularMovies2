@@ -1,6 +1,5 @@
 package com.example.drew.popularmovies;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -53,7 +52,7 @@ public class MovieFragment extends Fragment {
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(Uri dateUri);
+        public void onItemSelected(Uri idUri);
     }
 
     @Override
@@ -91,11 +90,17 @@ public class MovieFragment extends Fragment {
 
     mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-            Movie movie = (Movie) parent.getItemAtPosition(position);
-            Intent intent = new Intent(getActivity(), DetailsActivity.class);
 
-            intent.putExtra("id", movie.getMovieID());
-            startActivity(intent);
+            Movie movie = (Movie) parent.getItemAtPosition(position);
+            //Intent intent = new Intent(getActivity(), DetailsActivity.class);
+
+            ((Callback)getActivity()).onItemSelected(Uri.parse(movie.getMovieID()));
+
+            Log.v("Uri.parse.(movie.getMovieID())", Uri.parse(movie.getMovieID()).toString());
+
+
+            //intent.putExtra("id", movie.getMovieID());
+            //startActivity(intent);
         }
     });
         return rootView;

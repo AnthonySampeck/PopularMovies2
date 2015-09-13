@@ -45,7 +45,7 @@ import java.util.ArrayList;
 
 public class DetailsFragment extends MovieFragment {
 
-    static final String DETAIL_URI = "URI";
+    static final String DETAIL_URI = "76341";
 
     private TextView titleTextView;
     private ImageView imageView;
@@ -54,7 +54,7 @@ public class DetailsFragment extends MovieFragment {
     private ArrayAdapter<String> mReviewAdapter;
     private ArrayAdapter<String> mTrailerAdapter;
     private String mTitle;
-    private String mMovieID;
+    //private String DETAIL_URI;
     private String mImage;
     private String mRating;
     private String mDesc;
@@ -74,6 +74,7 @@ public class DetailsFragment extends MovieFragment {
     private TextView descTextView;
 
     private Uri mUri;
+    private String mStringUri;
 
 
     @Override
@@ -96,8 +97,11 @@ public class DetailsFragment extends MovieFragment {
 
         Bundle arguments = getArguments();
          if (arguments != null) {
-             mUri = arguments.getParcelable(DetailsFragment.DETAIL_URI);
+             //mUri = arguments.getParcelable(DetailsFragment.DETAIL_URI);
+             mStringUri = arguments.getParcelable(DetailsFragment.DETAIL_URI).toString();
+
          }
+
 
 
         View rootView = inflater.inflate(R.layout.activity_details_view, container, false);
@@ -145,7 +149,7 @@ public class DetailsFragment extends MovieFragment {
 
         mRatingBar = (RatingBar) rootView.findViewById(R.id.ratingbar1);
 
-        Bundle bundle = getActivity().getIntent().getExtras();
+        //Bundle bundle = getActivity().getIntent().getExtras();
 
         //mTitle = bundle.getString("title");
         //mImage = bundle.getString("image");
@@ -154,8 +158,7 @@ public class DetailsFragment extends MovieFragment {
         //mRating = bundle.getString("rating");
         //float fRating = Float.parseFloat(mRating);
         //ratingBar1.setRating(fRating / 2);
-        mMovieID=bundle.getString("id");
-
+        //DETAIL_URI=bundle.getString("id");
 
 
 
@@ -168,13 +171,13 @@ public class DetailsFragment extends MovieFragment {
         mButton.setOnClickListener(new View.OnClickListener() {
 
             MySQLiteHelper cb = new MySQLiteHelper(getActivity().getApplicationContext());
-            boolean mState = cb.getBook(mMovieID);
+            boolean mState = cb.getBook(mStringUri);
 
             public void onClick(View v) {
                 if (mState) {
                     //remove movieID from database list that will generate from updateMovie else statement
                     MySQLiteHelper db = new MySQLiteHelper(getActivity().getApplicationContext());
-                    db.deleteBook(new Movie(mTitle, mMovieID, mYear, mRating, mDesc, mImage));
+                    db.deleteBook(new Movie(mTitle, mStringUri, mYear, mRating, mDesc, mImage));
                     Log.v(LOG_TAG, "All Favorites in db: " + db.getAllBooks());
                     Log.v(LOG_TAG, "unfav");
                     mState = false;
@@ -190,10 +193,10 @@ public class DetailsFragment extends MovieFragment {
 
                 } else if (!mState) {
                     //add movieID to database list that will generate from updateMovie else statement
-                    //Movie movie =new Movie(mTitle,mMovieID);\
+                    //Movie movie =new Movie(mTitle,DETAIL_URI);\
 
                     MySQLiteHelper db = new MySQLiteHelper(getActivity().getApplicationContext());
-                    db.addBook(new Movie(mTitle, mMovieID, mYear, mRating, mDesc, mImage));
+                    db.addBook(new Movie(mTitle, mStringUri, mYear, mRating, mDesc, mImage));
 
                     Context context = getActivity().getApplicationContext();
                     CharSequence text = mTitle + " added to favorites";
@@ -281,17 +284,17 @@ public class DetailsFragment extends MovieFragment {
 
     private void updateReview(){
         FetchReviewTask reviewTask = new FetchReviewTask();
-        reviewTask.execute(mMovieID);
+        reviewTask.execute(mStringUri);
     }
 
     private void updateTrailers(){
         FetchTrailerTask trailerTask = new FetchTrailerTask();
-        trailerTask.execute(mMovieID);
+        trailerTask.execute(mStringUri);
     }
 
     private void updateDetails(){
         AsyncHttpTask2 detailTask = new AsyncHttpTask2();
-        mFullPath=mBaseURL+mMovieID+mApi_key;
+        mFullPath=mBaseURL+mStringUri+mApi_key;
         detailTask.execute(mFullPath);
         Log.v(LOG_TAG,"mFullPath from updateDetails: "+mFullPath);
     }
@@ -340,7 +343,7 @@ public class DetailsFragment extends MovieFragment {
                 descTextView.setText(mDesc);
                 descTextView.setMovementMethod(new ScrollingMovementMethod());
                 titleTextView.setText(mTitle + " (" + mYear + ")");
-                mRatingBar.setRating((Float.parseFloat(mRating)/2));
+                mRatingBar.setRating((Float.parseFloat(mRating) / 2));
                 Picasso.with(getActivity()).load(mImage).into(imageView);
 
 
@@ -455,7 +458,7 @@ public class DetailsFragment extends MovieFragment {
             {
 //https://api.themoviedb.org/3/movie/76341?api_key=bb99fbc46e9777b057575f946a19f3f3&append_to_response=trailers,reviews
                 String baseURL="https://api.themoviedb.org/3/movie/";
-                String movieID=mMovieID;
+                String movieID= mStringUri;
                 String api_key="?api_key=bb99fbc46e9777b057575f946a19f3f3";
                 String append="&append_to_response=reviews,videos";
                 String fullPath=baseURL+movieID+api_key+append;
@@ -600,7 +603,7 @@ public class DetailsFragment extends MovieFragment {
             {
 //https://api.themoviedb.org/3/movie/76341?api_key=bb99fbc46e9777b057575f946a19f3f3&append_to_response=trailers,reviews
                 String baseURL="https://api.themoviedb.org/3/movie/";
-                String movieID=mMovieID;
+                String movieID= mStringUri;
                 String api_key="?api_key=bb99fbc46e9777b057575f946a19f3f3";
                 String append="&append_to_response=reviews,videos";
                 String fullPath=baseURL+movieID+api_key+append;

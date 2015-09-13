@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -30,13 +31,14 @@ public class DetailsActivity extends ActionBarActivity {
             Bundle arguments = new Bundle();
             arguments.putParcelable(DetailsFragment.DETAIL_URI, getIntent().getData());
 
+            Log.d("getIntent().getData()",getIntent().getData().toString());
+
             DetailsFragment fragment = new DetailsFragment();
             fragment.setArguments(arguments);
 
 
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.movie_detail_container, new DetailsFragment())
                     .add(R.id.movie_detail_container, fragment)
                     .commit();
         }
