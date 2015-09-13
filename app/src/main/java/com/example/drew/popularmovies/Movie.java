@@ -7,8 +7,7 @@ public class Movie {
     private String year;
     private String rating;
     private String id;
-    private String key;
-    private String name;
+
 
     private Integer dbid;
 
@@ -66,9 +65,7 @@ public class Movie {
     public void setMovieID(String id){this.id=id;}
 
 
-    public String getTrailerkey(){return key;}
 
-    public void setTrailerkey(String key){this.key=key;}
 
 
 

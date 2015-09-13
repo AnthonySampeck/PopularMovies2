@@ -12,10 +12,8 @@ import java.util.List;
 
 public class MySQLiteHelper extends SQLiteOpenHelper {
 
-    // Database Version
     private static final int DATABASE_VERSION = 1;
-    // Database Name
-    private static final String DATABASE_NAME = "BookDB";
+    private static final String DATABASE_NAME = "MovieDB";
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -23,8 +21,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // SQL statement to create book table
-        String CREATE_BOOK_TABLE = "CREATE TABLE books ( " +
+        String CREATE_MOVIE_TABLE = "CREATE TABLE movies ( " +
                 "dbid INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "title TEXT, "+
                 "year TEXT, "+
@@ -33,28 +30,19 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 "description TEXT, "+
                 "id TEXT )";
 
-        // create books table
-        db.execSQL(CREATE_BOOK_TABLE);
+        db.execSQL(CREATE_MOVIE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Drop older books table if existed
-        db.execSQL("DROP TABLE IF EXISTS books");
+        db.execSQL("DROP TABLE IF EXISTS movies");
 
-        // create fresh books table
         this.onCreate(db);
     }
-    //---------------------------------------------------------------------
 
-    /**
-     * CRUD operations (create "add", read "get", update, delete) book + get all books + delete all books
-     */
 
-    // Books table name
-    private static final String TABLE_BOOKS = "books";
+    private static final String TABLE_MOVIES = "movies";
 
-    // Books Table Columns names
     private static final String KEY_ID = "dbid";
     private static final String KEY_TITLE = "title";
     private static final String KEY_YEAR = "year";
@@ -69,49 +57,41 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     private static final String[] COLUMNS = {KEY_ID,KEY_TITLE,KEY_YEAR,KEY_RATING,KEY_DESCRIPTION,KEY_IMAGE,KEY_MOVIEID};
 
-    public void addBook(Movie book){
-        Log.d("addBook", book.toString());
-        // 1. get reference to writable DB
+    public void addMovie(Movie movie){
+        Log.d("addMovie", movie.toString());
         SQLiteDatabase db = this.getWritableDatabase();
 
-        // 2. create ContentValues to add key "column"/value
         ContentValues values = new ContentValues();
-        values.put(KEY_TITLE, book.getTitle()); // get title
-        values.put(KEY_YEAR, book.getYear()); // get author
-        values.put(KEY_IMAGE, book.getImage());
-        values.put(KEY_RATING, book.getRating());
-        values.put(KEY_DESCRIPTION, book.getDesc());
-        values.put(KEY_MOVIEID,book.getMovieID());
+        values.put(KEY_TITLE, movie.getTitle());
+        values.put(KEY_YEAR, movie.getYear());
+        values.put(KEY_IMAGE, movie.getImage());
+        values.put(KEY_RATING, movie.getRating());
+        values.put(KEY_DESCRIPTION, movie.getDesc());
+        values.put(KEY_MOVIEID, movie.getMovieID());
 
 
-        // 3. insert
-        db.insert(TABLE_BOOKS, // table
-                null, //nullColumnHack
-                values); // key/value -> keys = column names/ values = column values
+        db.insert(TABLE_MOVIES,
+                null,
+                values);
 
-        // 4. close
         db.close();
     }
 
 
-    // getBook
-    public boolean getBook(String book){
+    public boolean getMovie(String movie){
 
-        // 1. get reference to readable DB
         SQLiteDatabase db = this.getReadableDatabase();
 
-        // 2. build query
         Cursor cursor =
-                db.query(TABLE_BOOKS, // a. table
-                        COLUMNS, // b. column names
-                        "id=?", // c. selections
-                        new String[] {String.valueOf(book)}, // d. selections args
-                        null, // e. group by
-                        null, // f. having
-                        null, // g. order by
-                        null); // h. limit
+                db.query(TABLE_MOVIES,
+                        COLUMNS,
+                        "id=?",
+                        new String[] {String.valueOf(movie)},
+                        null,
+                        null,
+                        null,
+                        null);
 
-        // 3. if we got results get the first one
         if (cursor.moveToFirst()){
             Log.d("cursor", cursor.toString());
 return true;
@@ -119,66 +99,49 @@ return true;
         else return false;
     }
 
-    public boolean Exists(String id) {
-        SQLiteDatabase mDb = this.getReadableDatabase();
-        Cursor cursor = mDb.rawQuery("select Movie from books where id=id",
-                new String[]{id});
-        boolean exists = (cursor.getCount() > 0);
-        cursor.close();
-        return exists;
-    }
 
 
-    // Deleting single book
-    public void deleteBook(Movie book) {
 
-        // 1. get reference to writable DB
+    public void deleteMovie(Movie movie) {
+
         SQLiteDatabase db = this.getWritableDatabase();
 
-        // 2. delete
-        db.delete(TABLE_BOOKS,
+        db.delete(TABLE_MOVIES,
                 KEY_MOVIEID + " = ?",
-                new String[]{String.valueOf(book.getMovieID()) });
+                new String[]{String.valueOf(movie.getMovieID()) });
 
-        // 3. close
         db.close();
 
-        Log.d("deleteBook", book.toString());
+        Log.d("deleteMovie", movie.toString());
 
     }
 
-    // Get All Books
-    public List<Movie> getAllBooks() {
-        List<Movie> books = new LinkedList<Movie>();
+    public List<Movie> getAllMovies() {
+        List<Movie> movies = new LinkedList<Movie>();
 
-        // 1. build the query
-        String query = "SELECT  * FROM " + TABLE_BOOKS;
+        String query = "SELECT  * FROM " + TABLE_MOVIES;
 
-        // 2. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
-        // 3. go over each row, build book and add it to list
-        Movie book = null;
+        Movie movie = null;
         if (cursor.moveToFirst()) {
             do {
-                book = new Movie();
-                book.setDbid(Integer.parseInt(cursor.getString(0)));
-                book.setTitle(cursor.getString(1));
-                book.setYear(cursor.getString(2));
-                book.setImage(cursor.getString(3));
-                book.setRating(cursor.getString(4));
-                book.setDesc(cursor.getString(5));
-                book.setMovieID(cursor.getString(6));
+                movie = new Movie();
+                movie.setDbid(Integer.parseInt(cursor.getString(0)));
+                movie.setTitle(cursor.getString(1));
+                movie.setYear(cursor.getString(2));
+                movie.setImage(cursor.getString(3));
+                movie.setRating(cursor.getString(4));
+                movie.setDesc(cursor.getString(5));
+                movie.setMovieID(cursor.getString(6));
 
-                // Add book to books
-                books.add(book);
+                movies.add(movie);
             } while (cursor.moveToNext());
         }
 
-        Log.d("getAllBooks()", books.toString());
+        Log.d("getAllMovies()", movies.toString());
 
-        // return books
-        return books;
+        return movies;
     }
 }

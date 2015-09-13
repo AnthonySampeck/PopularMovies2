@@ -6,11 +6,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -30,9 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-/**
- * Created by drew on 9/7/15.
- */
+
 public class MovieFragment extends Fragment {
     private static final String LOG_TAG = GridViewActivity.class.getSimpleName();
 
@@ -41,17 +37,11 @@ public class MovieFragment extends Fragment {
     private ArrayList<Movie> mMovie;
     private String mBase_URL = "http://api.themoviedb.org/3/discover/movie?";
     private String mSort = null;
-    private String mApi_key = "&api_key=bb99fbc46e9777b057575f946a19f3f3";
+    private String mApi_key = "&api_key=";
 
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
+
     public interface Callback {
-        /**
-         * DetailFragmentCallback for when an item has been selected.
-         */
+
         public void onItemSelected(Uri idUri);
     }
 
@@ -65,17 +55,7 @@ public class MovieFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.movie_fragment, menu);
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_refresh) {
-            updateMovies();
-            return true;
-        }
 
-        return super.onOptionsItemSelected(item);
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,15 +72,9 @@ public class MovieFragment extends Fragment {
         public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 
             Movie movie = (Movie) parent.getItemAtPosition(position);
-            //Intent intent = new Intent(getActivity(), DetailsActivity.class);
 
             ((Callback)getActivity()).onItemSelected(Uri.parse(movie.getMovieID()));
 
-            Log.v("Uri.parse.(movie.getMovieID())", Uri.parse(movie.getMovieID()).toString());
-
-
-            //intent.putExtra("id", movie.getMovieID());
-            //startActivity(intent);
         }
     });
         return rootView;
@@ -114,12 +88,8 @@ public class MovieFragment extends Fragment {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mSort = prefs.getString("sort", "sort_by=popularity.desc");
 
-
             String fullPath = mBase_URL + mSort + mApi_key;
             movieTask.execute(fullPath);
-
-
-
 
     }
 
@@ -146,16 +116,14 @@ public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
                 if(mSort.startsWith("sort_by")){
                 String response = streamToString(httpResponse.getEntity().getContent());
                 parseResult(response);
-                Log.v(LOG_TAG,"response to Parse method: "+response);
                 result = 1;}
 
                 else{
                     MySQLiteHelper db = new MySQLiteHelper(getActivity());
 
-                    String favorites = db.getAllBooks().toString();
+                    String favorites = db.getAllMovies().toString();
 
                     String testStr="{\"results\":"+favorites+"}";
-                    Log.v(LOG_TAG,"fav to parse results: "+testStr);
                     parseResult(testStr);
 
                     result=1;
@@ -166,10 +134,8 @@ public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
 
             } else {
                 result = 0;
-                Log.v(LOG_TAG,"mSort: "+mSort);
             }
         } catch (Exception e) {
-            Log.d(LOG_TAG, e.getLocalizedMessage());
         }
 
         return result;
@@ -182,9 +148,6 @@ public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
             mGridAdapter.setGridData(mMovie);
         }
 
-        //else {
-        //    Toast.makeText(getActivity(), "Failed to get data", Toast.LENGTH_SHORT).show();
-        //}
 
     }
 }
@@ -226,7 +189,6 @@ public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
                 movie.setRating(rating);
                 movie.setImage(fullPosterPath);
                 movie.setMovieID(id);
-                Log.v(LOG_TAG,"movie id: "+id +"poster_path: "+fullPosterPath);
                 mMovie.add(movie);
             }
         } catch (JSONException e) {
