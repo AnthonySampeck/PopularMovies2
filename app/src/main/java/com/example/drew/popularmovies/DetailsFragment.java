@@ -26,6 +26,10 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +50,7 @@ public class DetailsFragment extends MovieFragment {
     private TextView titleTextView;
     private ImageView imageView;
     private static final String LOG_TAG = GridViewActivity.class.getSimpleName();
+    private ArrayAdapter<String> mDetailAdapter;
     private ArrayAdapter<String> mReviewAdapter;
     private ArrayAdapter<String> mTrailerAdapter;
     private String mTitle;
@@ -54,7 +59,15 @@ public class DetailsFragment extends MovieFragment {
     private String mRating;
     private String mDesc;
     private String mYear;
+    private String mTitleYear = mTitle + " (" + mYear + ")";
+    private RatingBar mRatingBar;
+
+
     private ImageButton mButton;
+
+    private String mBaseURL="https://api.themoviedb.org/3/movie/";
+    private String mApi_key="?api_key=bb99fbc46e9777b057575f946a19f3f3";
+    private String mFullPath;
 
     private String mSort;
 
@@ -78,6 +91,8 @@ public class DetailsFragment extends MovieFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
 
         Bundle arguments = getArguments();
          if (arguments != null) {
@@ -128,18 +143,17 @@ public class DetailsFragment extends MovieFragment {
 
 
 
-        final RatingBar ratingBar1 = (RatingBar) rootView.findViewById(R.id.ratingbar1);
+        mRatingBar = (RatingBar) rootView.findViewById(R.id.ratingbar1);
 
         Bundle bundle = getActivity().getIntent().getExtras();
 
-        mTitle = bundle.getString("title");
-        mImage = bundle.getString("image");
-        mDesc = bundle.getString("description");
-        mYear = bundle.getString("year");
-        mRating = bundle.getString("rating");
-        String titleYear = mTitle + " (" + mYear + ")";
-        float fRating = Float.parseFloat(mRating);
-        ratingBar1.setRating(fRating / 2);
+        //mTitle = bundle.getString("title");
+        //mImage = bundle.getString("image");
+        //mDesc = bundle.getString("description");
+        //mYear = bundle.getString("year");
+        //mRating = bundle.getString("rating");
+        //float fRating = Float.parseFloat(mRating);
+        //ratingBar1.setRating(fRating / 2);
         mMovieID=bundle.getString("id");
 
 
@@ -203,17 +217,14 @@ public class DetailsFragment extends MovieFragment {
             }
         });
 
+        descTextView = (TextView) rootView.findViewById(R.id.desc);
 
 
 
         titleTextView = (TextView)rootView.findViewById(R.id.title);
-        titleTextView.setText(titleYear);
-        descTextView = (TextView) rootView.findViewById(R.id.desc);
-        descTextView.setText(mDesc);
-        descTextView.setMovementMethod(new ScrollingMovementMethod());
+
 
         imageView = (ImageView) rootView.findViewById(R.id.movie_image);
-        Picasso.with(getActivity()).load(mImage).into(imageView);
 
 
 
@@ -259,6 +270,8 @@ public class DetailsFragment extends MovieFragment {
 
         updateTrailers();
 
+        updateDetails();
+
         return rootView;
 
     }
@@ -275,6 +288,119 @@ public class DetailsFragment extends MovieFragment {
         FetchTrailerTask trailerTask = new FetchTrailerTask();
         trailerTask.execute(mMovieID);
     }
+
+    private void updateDetails(){
+        AsyncHttpTask2 detailTask = new AsyncHttpTask2();
+        mFullPath=mBaseURL+mMovieID+mApi_key;
+        detailTask.execute(mFullPath);
+        Log.v(LOG_TAG,"mFullPath from updateDetails: "+mFullPath);
+    }
+
+
+
+
+
+    public class AsyncHttpTask2 extends AsyncTask<String, Void, Integer> {
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            Integer result = 0;
+            try {
+                HttpClient httpclient = new DefaultHttpClient();
+                HttpResponse httpResponse = httpclient.execute(new HttpGet(params[0]));
+                int status = httpResponse.getStatusLine().getStatusCode();
+
+                if (status == 200) {
+
+                    String response = streamToString(httpResponse.getEntity().getContent());
+                    parseResult(response);
+                    Log.v(LOG_TAG, "response to Parse method2: " + response);
+                    result = 1;
+                }
+
+
+
+
+                else {
+                    result = 0;
+                    Log.v(LOG_TAG,"mSort: "+mSort);
+                }
+            } catch (Exception e) {
+                Log.d(LOG_TAG, e.getLocalizedMessage());
+            }
+
+            return result;
+        }
+
+
+        @Override
+        protected void onPostExecute(Integer result) {
+
+            if (result == 1) {
+                descTextView.setText(mDesc);
+                descTextView.setMovementMethod(new ScrollingMovementMethod());
+                titleTextView.setText(mTitle + " (" + mYear + ")");
+                mRatingBar.setRating((Float.parseFloat(mRating)/2));
+                Picasso.with(getActivity()).load(mImage).into(imageView);
+
+
+            }
+
+            //else {
+            //    Toast.makeText(getActivity(), "Failed to get data", Toast.LENGTH_SHORT).show();
+            //}
+
+        }
+
+    }
+
+    String streamToString(InputStream stream) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
+        String line;
+        String result = "";
+        while ((line = bufferedReader.readLine()) != null) {
+            result += line;
+        }
+
+        if (null != stream) {
+            stream.close();
+        }
+        return result;
+    }
+
+
+    private void parseResult(String result) {
+        try {
+            JSONObject post = new JSONObject(result);
+
+            Log.v(LOG_TAG,"JSONObject post in parse results: "+post);
+
+                String title = post.optString("title");
+                String poster = post.optString("poster_path");
+                String fullPosterPath = "http://image.tmdb.org/t/p/w500/" + poster;
+                String year = post.optString("release_date");
+                String desc = post.optString("overview");
+                String rating = post.optString("vote_average");
+
+            mTitle=title;
+            mImage=fullPosterPath;
+            mYear=year;
+            mDesc=desc;
+            mRating=rating;
+
+
+            Log.v(LOG_TAG, "mImage after parse results: " + fullPosterPath);
+
+
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 
 
     public class FetchReviewTask extends AsyncTask<String, Void, ArrayList<String >> {

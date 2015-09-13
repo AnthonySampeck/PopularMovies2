@@ -94,12 +94,7 @@ public class MovieFragment extends Fragment {
             Movie movie = (Movie) parent.getItemAtPosition(position);
             Intent intent = new Intent(getActivity(), DetailsActivity.class);
 
-            intent.putExtra("title", movie.getTitle()).
-                    putExtra("image", movie.getImage()).
-                    putExtra("year", movie.getYear()).
-                    putExtra("description", movie.getDesc()).
-                    putExtra("rating", movie.getRating()).
-                    putExtra("id", movie.getMovieID());
+            intent.putExtra("id", movie.getMovieID());
             startActivity(intent);
         }
     });
