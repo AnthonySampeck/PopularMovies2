@@ -2,6 +2,7 @@ package com.example.drew.popularmovies;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -42,6 +43,18 @@ public class MovieFragment extends Fragment {
     private String mBase_URL = "http://api.themoviedb.org/3/discover/movie?";
     private String mSort = null;
     private String mApi_key = "&api_key=bb99fbc46e9777b057575f946a19f3f3";
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Uri dateUri);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -3,18 +3,37 @@ package com.example.drew.popularmovies;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
 
-public class DetailsActivity extends FragmentActivity {
+public class DetailsActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_details);
+
+        if (savedInstanceState == null) {
+
+            // Create the detail fragment and add it to the activity
+            // using a fragment transaction.
+
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(DetailsFragment.DETAIL_URI, getIntent().getData());
+
+            DetailsFragment fragment = new DetailsFragment();
+            fragment.setArguments(arguments);
+
+
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.movie_detail_container, new DetailsFragment())
+                    .add(R.id.movie_detail_container, fragment)
+                    .commit();
+        }
 
     }
 

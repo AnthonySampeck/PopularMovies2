@@ -41,6 +41,8 @@ import java.util.ArrayList;
 
 public class DetailsFragment extends MovieFragment {
 
+    static final String DETAIL_URI = "URI";
+
     private TextView titleTextView;
     private ImageView imageView;
     private static final String LOG_TAG = GridViewActivity.class.getSimpleName();
@@ -58,6 +60,8 @@ public class DetailsFragment extends MovieFragment {
 
     private TextView descTextView;
 
+    private Uri mUri;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,6 +78,12 @@ public class DetailsFragment extends MovieFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Bundle arguments = getArguments();
+         if (arguments != null) {
+             mUri = arguments.getParcelable(DetailsFragment.DETAIL_URI);
+         }
+
 
         View rootView = inflater.inflate(R.layout.activity_details_view, container, false);
 
