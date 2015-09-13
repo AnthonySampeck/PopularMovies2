@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -168,9 +167,11 @@ public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
 
         if (result == 1) {
             mGridAdapter.setGridData(mMovie);
-        } else {
-            Toast.makeText(getActivity(), "Failed to get data", Toast.LENGTH_SHORT).show();
         }
+
+        //else {
+        //    Toast.makeText(getActivity(), "Failed to get data", Toast.LENGTH_SHORT).show();
+        //}
 
     }
 }

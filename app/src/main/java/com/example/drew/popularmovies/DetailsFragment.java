@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
+import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,6 +76,37 @@ public class DetailsFragment extends MovieFragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.activity_details_view, container, false);
+
+
+
+// create the TabHost that will contain the Tabs
+        TabHost tabHost = (TabHost)rootView.findViewById(android.R.id.tabhost);
+
+
+        TabHost.TabSpec tab1 = tabHost.newTabSpec("About");
+        TabHost.TabSpec tab2 = tabHost.newTabSpec("Reviews");
+        TabHost.TabSpec tab3 = tabHost.newTabSpec("Trailers");
+
+
+        /** Add the tabs  to the TabHost to display. */
+        tabHost.setup();
+
+        // Set the Tab name and Activity
+        // that will be opened when particular Tab will be selected
+        tab1.setIndicator("About");
+        tab1.setContent(R.id.desc);
+
+        tab2.setIndicator("Reviews");
+        tab2.setContent(R.id.listview_reviews);
+
+        tab3.setIndicator("Trailers");
+        tab3.setContent(R.id.listview_trailers);
+
+
+        tabHost.addTab(tab1);
+        tabHost.addTab(tab2);
+        tabHost.addTab(tab3);
+
 
 
 
