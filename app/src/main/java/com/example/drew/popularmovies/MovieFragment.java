@@ -96,6 +96,7 @@ public class MovieFragment extends Fragment {
 
 
     public void updateMovies() {
+        if(mGridAdapter!=null)
         mGridAdapter.clear();
         AsyncHttpTask movieTask = new AsyncHttpTask();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
