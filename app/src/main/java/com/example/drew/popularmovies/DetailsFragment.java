@@ -89,27 +89,27 @@ public class DetailsFragment extends MovieFragment {
     }
 
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
 
-
         Bundle arguments = getArguments();
-         if (arguments != null) {
-             //mUri = arguments.getParcelable(DetailsFragment.DETAIL_URI);
-             mStringUri = arguments.getParcelable(DetailsFragment.DETAIL_URI).toString();
+        if (arguments != null) {
+            mUri = arguments.getParcelable(DetailsFragment.DETAIL_URI);
+            mStringUri = mUri.toString();
 
-         }
-
+            Log.d("mStringUri", mStringUri);
+        }
 
 
         View rootView = inflater.inflate(R.layout.activity_details_view, container, false);
 
 
-
 // create the TabHost that will contain the Tabs
-        TabHost tabHost = (TabHost)rootView.findViewById(android.R.id.tabhost);
+        TabHost tabHost = (TabHost) rootView.findViewById(android.R.id.tabhost);
 
 
         TabHost.TabSpec tab1 = tabHost.newTabSpec("About");
@@ -137,16 +137,6 @@ public class DetailsFragment extends MovieFragment {
         tabHost.addTab(tab3);
 
 
-
-
-
-
-
-
-
-
-
-
         mRatingBar = (RatingBar) rootView.findViewById(R.id.ratingbar1);
 
         //Bundle bundle = getActivity().getIntent().getExtras();
@@ -161,13 +151,9 @@ public class DetailsFragment extends MovieFragment {
         //DETAIL_URI=bundle.getString("id");
 
 
-
-
-
-
         mButton = (ImageButton) rootView.findViewById(R.id.favorite_button);
 
-
+        if(getArguments()!=null){
         mButton.setOnClickListener(new View.OnClickListener() {
 
             MySQLiteHelper cb = new MySQLiteHelper(getActivity().getApplicationContext());
@@ -219,6 +205,10 @@ public class DetailsFragment extends MovieFragment {
 
             }
         });
+
+
+    }
+
 
         descTextView = (TextView) rootView.findViewById(R.id.desc);
 
@@ -283,21 +273,27 @@ public class DetailsFragment extends MovieFragment {
 
 
     private void updateReview(){
-        FetchReviewTask reviewTask = new FetchReviewTask();
-        reviewTask.execute(mStringUri);
+        if(getArguments()!=null) {
+            FetchReviewTask reviewTask = new FetchReviewTask();
+            reviewTask.execute(mStringUri);
+        }
     }
 
     private void updateTrailers(){
-        FetchTrailerTask trailerTask = new FetchTrailerTask();
-        trailerTask.execute(mStringUri);
+        if(getArguments()!=null) {
+            FetchTrailerTask trailerTask = new FetchTrailerTask();
+            trailerTask.execute(mStringUri);
+        }
     }
 
     private void updateDetails(){
-        AsyncHttpTask2 detailTask = new AsyncHttpTask2();
-        mFullPath=mBaseURL+mStringUri+mApi_key;
-        detailTask.execute(mFullPath);
-        Log.v(LOG_TAG,"mFullPath from updateDetails: "+mFullPath);
-    }
+        if(getArguments()!=null) {
+            AsyncHttpTask2 detailTask = new AsyncHttpTask2();
+            mFullPath = mBaseURL + mStringUri + mApi_key;
+            detailTask.execute(mFullPath);
+            Log.v(LOG_TAG, "mFullPath from updateDetails: " + mFullPath);
+        }
+        }
 
 
 

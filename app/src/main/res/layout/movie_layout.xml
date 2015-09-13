@@ -5,6 +5,8 @@
         android:layout_width="115dp"
         android:scaleType="fitCenter"
         android:layout_height="172dp"
+        android:padding="6dp"
+
         />
 
 
