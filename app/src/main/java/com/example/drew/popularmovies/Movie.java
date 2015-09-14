@@ -1,6 +1,9 @@
 package com.example.drew.popularmovies;
 
-public class Movie {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Movie implements Parcelable{
     private String image;
     private String title;
     private String desc;
@@ -13,6 +16,29 @@ public class Movie {
 
     public Movie() {super();}
 
+
+
+    private int mData;
+
+    public int describeContents() {
+        return 0;
+    }
+
+
+
+    public static final Parcelable.Creator<Movie> CREATOR
+            = new Parcelable.Creator<Movie>() {
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+
+
     public Movie(String title, String id, String year, String rating, String desc, String image) {
         super();
         this.title = title;
@@ -21,6 +47,29 @@ public class Movie {
         this.desc=desc;
         this.image=image;
         this.year=year;
+    }
+
+    private Movie(Parcel in) {
+        title=in.readString();
+        id=in.readString();
+        rating=in.readString();
+        desc=in.readString();
+        image=in.readString();
+        year=in.readString();
+
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(title);
+        out.writeString(id);
+        out.writeString(rating);
+        out.writeString(desc);
+        out.writeString(image);
+        out.writeString(year);
+
+
+
+
     }
 
 

@@ -29,7 +29,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 
-public class MovieFragment extends Fragment {
+public class MovieFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener{
+
+
     private static final String LOG_TAG = GridViewActivity.class.getSimpleName();
 
     private GridView mGridView;
@@ -37,7 +39,7 @@ public class MovieFragment extends Fragment {
     private ArrayList<Movie> mMovie;
     private String mBase_URL = "http://api.themoviedb.org/3/discover/movie?";
     private String mSort = null;
-    private String mApi_key = "&api_key=";
+    private String mApi_key = "&api_key=bb99fbc46e9777b057575f946a19f3f3";
 
 
     public interface Callback {
@@ -46,10 +48,23 @@ public class MovieFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        if (key.equals("sort"))
+updateMovies();
     }
+
+
+
+
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .unregisterOnSharedPreferenceChangeListener(this);}
+
+
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -61,10 +76,24 @@ public class MovieFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+            PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .registerOnSharedPreferenceChangeListener(this);
+
+        if(savedInstanceState!=null){
+            mMovie = savedInstanceState.getParcelableArrayList("key");}
+        else{
+
+            updateMovies();
+
+        }
+
+
+
+
     View rootView=inflater.inflate(R.layout.activity_gridview,container, false);
     mGridView = (GridView) rootView.findViewById(R.id.gridView);
 
-    mMovie = new ArrayList<>();
+    if (savedInstanceState==null)mMovie = new ArrayList<>();
     mGridAdapter = new GridViewAdapter(getActivity(), R.layout.movie_layout, mMovie);
     mGridView.setAdapter(mGridAdapter);
 
@@ -93,11 +122,17 @@ public class MovieFragment extends Fragment {
 
     }
 
+
+
     @Override
-    public void onResume() {
-        super.onResume();
-        updateMovies();
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("key", mMovie);
+        super.onSaveInstanceState(outState);
     }
+
+
+
+
 
 
 
