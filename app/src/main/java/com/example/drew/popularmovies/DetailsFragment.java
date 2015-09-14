@@ -63,7 +63,7 @@ public class DetailsFragment extends MovieFragment {
     private ImageButton mButton;
 
     private String mBaseURL = "https://api.themoviedb.org/3/movie/";
-    private String mApi_key = "?api_key=bb99fbc46e9777b057575f946a19f3f3";
+    private String mApi_key = "?api_key=";
     private String mFullPath;
 
 
