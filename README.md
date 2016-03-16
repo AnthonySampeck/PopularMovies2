@@ -1,5 +1,5 @@
 # PopularMovies2
-This is the second project of Udacity's Android nanodegree.  
+This is the second project of Udacity's Android Nanodegree.  
 It does the following:  
 *Presents the user with a grid arrangement of movie posters upon launch.  
 *Allows the user to change sort order via a setting: The sort order can be by most popular or by highest-rated.  
